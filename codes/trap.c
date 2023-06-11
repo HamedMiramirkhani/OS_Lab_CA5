@@ -38,11 +38,11 @@ trap(struct trapframe *tf)
 {
   if(tf->trapno == T_SYSCALL){
     if(myproc()->killed)
-      exit();
+      exit(1);
     myproc()->tf = tf;
     syscall();
     if(myproc()->killed)
-      exit();
+      exit(1);
     return;
   }
 
@@ -78,6 +78,29 @@ trap(struct trapframe *tf)
     lapiceoi();
     break;
 
+  //Added following case for lab3
+  case T_PGFLT:
+    ; //Inserting empty statement because labels can only be followed by 
+    //statements, and declarations do not count as statements in C.
+    //We are declaring offendingAddr below and hence in the absence of
+    //empty statement, an error is thrown.
+    uint offendingAddr = PGROUNDDOWN(rcr2());
+    uint stackTop = STACKTOP - (myproc()->stackPages * PGSIZE);
+    if(offendingAddr <= stackTop && offendingAddr >= (stackTop - PGSIZE)) {
+      if(allocuvm(myproc()->pgdir, offendingAddr, stackTop) == 0) {
+	      cprintf("trap.c: allocuvm failed. \
+        Number of current allocated pages: %d\n"\
+        , myproc()->stackPages);
+	      exit(1);
+      }
+      //Successful allocuvm() while page handling, hence incrementing number
+      //of stack pages.
+      myproc()->stackPages += 1;
+      cprintf("case T_PGFLT from trap.c: allocuvm succeeded. Number of pages allocated: %d\n", myproc()->stackPages);
+      break; //'break' inside 'if' because in the 'else' part, we want to handle the page fault using
+      //default handler.
+    }
+
   //PAGEBREAK: 13
   default:
     if(myproc() == 0 || (tf->cs&3) == 0){
@@ -98,7 +121,7 @@ trap(struct trapframe *tf)
   // (If it is still executing in the kernel, let it keep running
   // until it gets to the regular system call return.)
   if(myproc() && myproc()->killed && (tf->cs&3) == DPL_USER)
-    exit();
+    exit(1);
 
   // Force process to give up CPU on clock tick.
   // If interrupts were on while locks held, would need to check nlock.
@@ -108,5 +131,5 @@ trap(struct trapframe *tf)
 
   // Check if the process has been killed since we yielded
   if(myproc() && myproc()->killed && (tf->cs&3) == DPL_USER)
-    exit();
+    exit(1);
 }

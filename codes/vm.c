@@ -338,7 +338,11 @@ copyuvm(pde_t *pgdir, uint sz, uint st_sz)
       goto bad;
     }
   }
-
+  //Since stack is now moved to below KERNBASE, we need to copy all the
+  //pages of stack starting from KERNBASE - 1 upto the point where all the
+  //stack pages end. We keep the above loop as it is because we also
+  //wanted to copy Code+Data block in the new process.
+  uint stackTop = STACKTOP - (myproc()->stackPages * PGSIZE);
   for(i = 1; i <= st_sz; i++){
     if((pte = walkpgdir(pgdir, (void *)(STACKTOP - PGSIZE*i + 1) , 0)) == 0)
       panic("copyuvm: pte should exist");
