@@ -88,15 +88,15 @@ trap(struct trapframe *tf)
     uint stackTop = STACKTOP - (myproc()->stackPages * PGSIZE);
     if(offendingAddr <= stackTop && offendingAddr >= (stackTop - PGSIZE)) {
       if(allocuvm(myproc()->pgdir, offendingAddr, stackTop) == 0) {
-	      cprintf("trap.c: allocuvm failed. \
-        Number of current allocated pages: %d\n"\
+	      cprintf("case T_PGFLT from trap.c: allocuvm failed. Num of current allocated pages: %d\n"\
         , myproc()->stackPages);
 	      exit(1);
       }
       //Successful allocuvm() while page handling, hence incrementing number
       //of stack pages.
       myproc()->stackPages += 1;
-      cprintf("case T_PGFLT from trap.c: allocuvm succeeded. Number of pages allocated: %d\n", myproc()->stackPages);
+      cprintf("case T_PGFLT from trap.c: allocuvm succeeded. Num of pages allocated: %d\n", \
+      myproc()->stackPages);
       break; //'break' inside 'if' because in the 'else' part, we want to handle the page fault using
       //default handler.
     }
