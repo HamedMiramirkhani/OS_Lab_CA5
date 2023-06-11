@@ -43,7 +43,7 @@ seta20.2:
   movl    %cr0, %eax
   orl     $CR0_PE, %eax
   movl    %eax, %cr0
-
+  
 //PAGEBREAK!
   # Complete the transition to 32-bit protected mode by using a long jmp
   # to reload %cs and %eip.  The segment descriptors are set up with no

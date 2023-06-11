@@ -38,7 +38,7 @@ exec(char *path, char **argv)
   if((pgdir = setupkvm()) == 0)
     goto bad;
 
-  
+
   // Load program into memory.
   sz = 0;
   for(i=0, off=elf.phoff; i<elf.phnum; i++, off+=sizeof(ph)){
@@ -64,7 +64,7 @@ exec(char *path, char **argv)
   // Allocate two pages at the next page boundary.
   // Make the first inaccessible.  
   // Use the second as the user stack.
- 
+
   /* COMMENT following
   sz = PGROUNDUP(sz);
   if((sz = allocuvm(pgdir, sz, sz + 2*PGSIZE)) == 0)
@@ -77,7 +77,7 @@ exec(char *path, char **argv)
   if((stack_top = allocuvm(pgdir, stack_top-PGSIZE, stack_top)) == 0)
 		 goto bad;
   sp = stack_top;
-  uint st_sz = 1;
+  uint st_sz = 1; 
 
   // Push argument strings, prepare rest of stack in ustack.
   for(argc = 0; argv[argc]; argc++) {
@@ -88,7 +88,7 @@ exec(char *path, char **argv)
       goto bad;
     ustack[3+argc] = sp;
   }
-
+  
   ustack[3+argc] = 0;
 
   ustack[0] = 0xffffffff;  // fake return PC

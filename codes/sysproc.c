@@ -15,15 +15,73 @@ sys_fork(void)
 
 int
 sys_exit(void)
-{
-  exit();
+{	
+  int status;
+  if(argint(0, &status) < 0){
+	return -1;
+  }
+  exit(status);
   return 0;  // not reached
 }
 
 int
 sys_wait(void)
 {
-  return wait();
+  	int *status;
+	if(argptr(0, (char**)&status, sizeof(int *)) < 0){
+		return -1;
+	}
+	return wait(status);
+}
+
+int
+sys_waitpid(void)
+{
+	int pid, option;
+	int *status = 0x0;
+	
+	if(argint(0, &pid) < 0){
+		return -1;
+	}
+	if(argptr(1, (char**)&status, sizeof(int *)) <0){
+		return -1;
+	}
+	if(argint(2, &option) < 0){
+		return -1;
+	}
+
+	return waitpid(pid, status, option); 
+}
+
+int
+sys_setpriority(void)
+{
+	int pid;
+	int priority;
+
+	if(argint(0, &pid) < 0){
+		return -1;
+	}
+	if(argint(1, &priority) < 0){
+		return -1;
+	}
+
+	return setpriority(pid, priority); 
+}
+
+int
+sys_getpriority(void)
+{
+	int pid;
+	int *priority = 0x0;
+
+	if(argint(0, &pid) < 0){
+		return -1;
+	}	
+	if(argptr(1, (char**)&priority, sizeof(int *)) <0){
+		return -1;
+	}
+  	return getpriority(pid, priority);
 }
 
 int

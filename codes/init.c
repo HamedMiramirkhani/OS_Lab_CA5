@@ -20,18 +20,19 @@ main(void)
   dup(0);  // stderr
 
   for(;;){
-    printf(1, "Group #5 Members:\n1- Fatemeh Mohammadi\n2- Sina Tabasi\n3- Hamed Miramirkhani\n");
+    printf(1, "Group #5 Members:\n1- Fatemeh Mohammadi \
+    \n2- Sina Tabasi\n3- Hamed Miramirkhani\n");
     pid = fork();
     if(pid < 0){
       printf(1, "init: fork failed\n");
-      exit();
+      exit(1);
     }
     if(pid == 0){
       exec("sh", argv);
       printf(1, "init: exec sh failed\n");
-      exit();
+      exit(1);
     }
-    while((wpid=wait()) >= 0 && wpid != pid)
+    while((wpid=wait(0x0)) >= 0 && wpid != pid)
       printf(1, "zombie!\n");
   }
 }
