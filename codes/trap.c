@@ -78,7 +78,7 @@ trap(struct trapframe *tf)
     lapiceoi();
     break;
 
-  //Added following case for lab3
+  //Added following case for page fault handling
   case T_PGFLT:
     ; //Inserting empty statement because labels can only be followed by 
     //statements, and declarations do not count as statements in C.
